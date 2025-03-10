@@ -1,185 +1,173 @@
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from flask import Flask, render_template, request, send_file, jsonify
+from werkzeug.utils import secure_filename
 import os
-from contact_extractor import ContactExtractor, save_contacts_to_excel
+import tempfile
 import logging
+from contact_extractor import ContactExtractor
+from config import Config
+import socket
 import pandas as pd
+from datetime import datetime
 
-class ContactExtractorApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("מחלץ אנשי קשר")
-        self.root.geometry("800x600")
-        self.root.configure(bg='#f0f0f0')
+app = Flask(__name__)
+app.config.from_object(Config)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max-limit
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['DOWNLOAD_FOLDER'] = 'downloads'
+
+# הגדרת לוגר
+logging.basicConfig(
+    level=app.config['LOG_LEVEL'],
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(app.config['LOG_FILE']),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# וודא שתיקיות קיימות
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(app.config['DOWNLOAD_FOLDER'], exist_ok=True)
+
+ALLOWED_EXTENSIONS = {'xlsx', 'xls', 'doc', 'docx'}
+
+def allowed_file(filename):
+    """בודק אם הקובץ מורשה"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/')
+def index():
+    """דף הבית"""
+    try:
+        logger.info("מישהו ניגש לדף הבית")
+        return render_template('index.html')
+    except Exception as e:
+        logger.error(f"שגיאה בטעינת דף הבית: {str(e)}")
+        return f"שגיאה בטעינת הדף: {str(e)}", 500
+
+@app.route('/extract', methods=['POST'])
+def extract_contacts():
+    if 'files' not in request.files:
+        return jsonify({'success': False, 'error': 'No files uploaded'})
+    
+    files = request.files.getlist('files')
+    all_contacts = []
+    
+    try:
+        for file in files:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(filepath)
+                
+                # חילוץ אנשי קשר מהקובץ
+                contacts = extract_contacts_from_file(filepath)
+                all_contacts.extend(contacts)
+                
+                # מחיקת הקובץ לאחר העיבוד
+                os.remove(filepath)
         
-        # הגדרת משתנים
-        self.source_folder = tk.StringVar()
-        self.target_file = tk.StringVar()
-        self.output_mode = tk.StringVar(value="new")  # ברירת מחדל: קובץ חדש
+        # הסרת כפילויות
+        unique_contacts = remove_duplicates(all_contacts)
         
-        # הגדרת לוגר
-        logging.basicConfig(level=logging.INFO)
-        self.logger = logging.getLogger(__name__)
+        # יצירת קובץ Excel
+        output_file = create_excel_output(unique_contacts)
         
-        # יצירת הממשק
-        self.create_widgets()
+        return jsonify({
+            'success': True,
+            'contacts': unique_contacts[:5],  # שליחת 5 אנשי הקשר הראשונים לתצוגה מקדימה
+            'download_url': f'/download/{os.path.basename(output_file)}'
+        })
         
-        # הגדרת הודעות לוג
-        self.log_messages = []
-        
-    def create_widgets(self):
-        # מסגרת ראשית
-        main_frame = ttk.Frame(self.root, padding="10")
-        main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        
-        # בחירת תיקיית מקור
-        source_frame = ttk.LabelFrame(main_frame, text="תיקיית מקור", padding="5")
-        source_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
-        
-        ttk.Label(source_frame, text="תיקייה:").grid(row=0, column=0, sticky=tk.W)
-        ttk.Entry(source_frame, textvariable=self.source_folder, width=50).grid(row=0, column=1, padx=5)
-        ttk.Button(source_frame, text="בחר תיקייה", command=self.select_source_folder).grid(row=0, column=2)
-        
-        # בחירת קובץ יעד
-        target_frame = ttk.LabelFrame(main_frame, text="קובץ יעד", padding="5")
-        target_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
-        
-        ttk.Label(target_frame, text="קובץ:").grid(row=0, column=0, sticky=tk.W)
-        ttk.Entry(target_frame, textvariable=self.target_file, width=50).grid(row=0, column=1, padx=5)
-        ttk.Button(target_frame, text="בחר קובץ", command=self.select_target_file).grid(row=0, column=2)
-        
-        # בחירת מצב פלט
-        output_frame = ttk.LabelFrame(main_frame, text="מצב פלט", padding="5")
-        output_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
-        
-        ttk.Radiobutton(output_frame, text="יצור קובץ חדש", variable=self.output_mode, value="new").grid(row=0, column=0, sticky=tk.W)
-        ttk.Radiobutton(output_frame, text="עדכון קובץ קיים", variable=self.output_mode, value="update").grid(row=0, column=1, sticky=tk.W)
-        
-        # מסגרת התקדמות
-        progress_frame = ttk.LabelFrame(main_frame, text="התקדמות", padding="5")
-        progress_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
-        
-        self.progress_var = tk.DoubleVar()
-        self.progress_bar = ttk.Progressbar(progress_frame, variable=self.progress_var, maximum=100)
-        self.progress_bar.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E))
-        
-        self.status_label = ttk.Label(progress_frame, text="")
-        self.status_label.grid(row=1, column=0, columnspan=2, sticky=tk.W)
-        
-        # מסגרת לוג
-        log_frame = ttk.LabelFrame(main_frame, text="לוג פעילות", padding="5")
-        log_frame.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
-        
-        self.log_text = tk.Text(log_frame, height=15, width=80)
-        self.log_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        
-        scrollbar = ttk.Scrollbar(log_frame, orient=tk.VERTICAL, command=self.log_text.yview)
-        scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
-        self.log_text.configure(yscrollcommand=scrollbar.set)
-        
-        # כפתור התחלה
-        ttk.Button(main_frame, text="התחל עיבוד", command=self.process_files).grid(row=5, column=0, columnspan=2, pady=10)
-        
-        # הגדרת הרחבה של החלון
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
-        main_frame.columnconfigure(1, weight=1)
-        main_frame.rowconfigure(4, weight=1)
-        
-    def select_source_folder(self):
-        folder = filedialog.askdirectory()
-        if folder:
-            self.source_folder.set(folder)
-            self.log_message(f"נבחרה תיקיית מקור: {folder}")
-            
-    def select_target_file(self):
-        file = filedialog.asksaveasfilename(
-            defaultextension=".xlsx",
-            filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
-            initialfile="אנשי_קשר.xlsx"
-        )
-        if file:
-            self.target_file.set(file)
-            self.log_message(f"נבחר קובץ יעד: {file}")
-            
-    def log_message(self, message):
-        self.log_messages.append(message)
-        self.log_text.insert(tk.END, message + "\n")
-        self.log_text.see(tk.END)
-        self.root.update()
-        
-    def process_files(self):
-        source_folder = self.source_folder.get()
-        target_file = self.target_file.get()
-        
-        if not source_folder or not target_file:
-            messagebox.showerror("שגיאה", "נא לבחור תיקיית מקור וקובץ יעד")
-            return
-            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/download/<filename>')
+def download_file(filename):
+    return send_file(
+        os.path.join(app.config['DOWNLOAD_FOLDER'], filename),
+        as_attachment=True,
+        download_name=f'contacts_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+    )
+
+def extract_contacts_from_file(filepath):
+    """חילוץ אנשי קשר מקובץ"""
+    contacts = []
+    ext = filepath.split('.')[-1].lower()
+    
+    if ext in ['xlsx', 'xls']:
+        df = pd.read_excel(filepath)
+        # הוסף כאן את הלוגיקה לחילוץ אנשי קשר מ-Excel
+    elif ext in ['doc', 'docx']:
+        # הוסף כאן את הלוגיקה לחילוץ אנשי קשר מ-Word
+        pass
+    
+    return contacts
+
+def remove_duplicates(contacts):
+    """הסרת כפילויות מרשימת אנשי הקשר"""
+    # הוסף כאן את הלוגיקה להסרת כפילויות
+    return contacts
+
+def create_excel_output(contacts):
+    """יצירת קובץ Excel מעוצב עם אנשי הקשר"""
+    filename = f'contacts_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+    output_path = os.path.join(app.config['DOWNLOAD_FOLDER'], filename)
+    
+    df = pd.DataFrame(contacts)
+    writer = pd.ExcelWriter(output_path, engine='xlsxwriter')
+    df.to_excel(writer, index=False, sheet_name='Contacts')
+    
+    # עיצוב הקובץ
+    workbook = writer.book
+    worksheet = writer.sheets['Contacts']
+    
+    header_format = workbook.add_format({
+        'bold': True,
+        'align': 'center',
+        'bg_color': '#4F81BD',
+        'font_color': 'white'
+    })
+    
+    # הגדרת רוחב עמודות ועיצוב כותרות
+    for col_num, value in enumerate(df.columns.values):
+        worksheet.write(0, col_num, value, header_format)
+        worksheet.set_column(col_num, col_num, 15)
+    
+    writer.close()
+    return output_path
+
+def is_port_available(port):
+    """בודק אם הפורט פנוי"""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
-            # איפוס סרגל ההתקדמות
-            self.progress_var.set(0)
-            self.status_label.config(text="מתחיל בעיבוד...")
-            self.root.update()
-            
-            # יצירת מחלץ אנשי קשר
-            extractor = ContactExtractor()
-            
-            # חילוץ אנשי קשר מכל הקבצים
-            contacts = []
-            files = [f for f in os.listdir(source_folder) if f.endswith(('.xlsx', '.xls', '.doc', '.docx'))]
-            total_files = len(files)
-            
-            for i, file in enumerate(files):
-                file_path = os.path.join(source_folder, file)
-                self.log_message(f"מעבד קובץ: {file}")
-                
-                try:
-                    file_contacts = extractor.extract_contacts(file_path)
-                    contacts.extend(file_contacts)
-                    self.log_message(f"נמצאו {len(file_contacts)} אנשי קשר בקובץ {file}")
-                except Exception as e:
-                    self.log_message(f"שגיאה בעיבוד הקובץ {file}: {str(e)}")
-                
-                # עדכון התקדמות
-                progress = (i + 1) / total_files * 100
-                self.progress_var.set(progress)
-                self.status_label.config(text=f"עובד קובץ {i+1} מתוך {total_files}")
-                self.root.update()
-            
-            if not contacts:
-                messagebox.showwarning("אזהרה", "לא נמצאו אנשי קשר בקבצים")
-                return
-                
-            # שמירת התוצאות
-            if self.output_mode.get() == "new":
-                # יצירת קובץ חדש
-                extractor.save_contacts_to_excel(contacts, target_file)
-                self.log_message(f"נשמרו {len(contacts)} אנשי קשר לקובץ חדש: {target_file}")
-            else:
-                # עדכון קובץ קיים
-                if os.path.exists(target_file):
-                    existing_contacts = extractor.load_contacts_from_excel(target_file)
-                    all_contacts = existing_contacts + contacts
-                    # הסרת כפילויות
-                    unique_contacts = extractor.remove_duplicates(all_contacts)
-                    extractor.save_contacts_to_excel(unique_contacts, target_file)
-                    self.log_message(f"עודכנו {len(unique_contacts)} אנשי קשר בקובץ: {target_file}")
-                else:
-                    messagebox.showerror("שגיאה", "קובץ היעד לא קיים")
-                    return
-            
-            self.status_label.config(text="העיבוד הושלם בהצלחה!")
-            messagebox.showinfo("הצלחה", f"נשמרו {len(contacts)} אנשי קשר בהצלחה")
-            
-        except Exception as e:
-            self.log_message(f"שגיאה: {str(e)}")
-            messagebox.showerror("שגיאה", f"אירעה שגיאה: {str(e)}")
+            s.bind(('0.0.0.0', port))
+            return True
+        except OSError:
+            return False
 
-def main():
-    root = tk.Tk()
-    app = ContactExtractorApp(root)
-    root.mainloop()
-
-if __name__ == "__main__":
-    main() 
+if __name__ == '__main__':
+    # יצירת תיקיות נדרשות
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    os.makedirs(app.config['TEMP_FOLDER'], exist_ok=True)
+    
+    try:
+        # מתחיל מפורט 5001
+        port = 5001
+        while port < 5100:
+            if is_port_available(port):
+                break
+            port += 1
+        
+        if port >= 5100:
+            print("לא נמצא פורט פנוי בטווח 5001-5099")
+            exit(1)
+            
+        print(f"מפעיל את השרת בפורט {port}")
+        print(f"גש לאפליקציה בכתובת: http://localhost:{port}")
+        
+        app.run(host='0.0.0.0', port=port, debug=True)
+    except Exception as e:
+        print(f"שגיאה בהפעלת השרת: {str(e)}") 
