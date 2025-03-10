@@ -1,0 +1,81 @@
+2025-03-02 02:40:06,362 - INFO - נמצאו 59 קבצים לעיבוד
+2025-03-02 02:40:06,996 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:08,028 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:08,047 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:10,641 - ERROR - שגיאה בעיבוד דוגמאות/טופס רשימת משתתפים בקורס copy.pdf: 'ContactExtractor' object has no attribute 'extract_from_pdf'
+2025-03-02 02:40:10,644 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:10,644 - ERROR - שגיאה בעיבוד דוגמאות/פנקס פליירים copy.doc: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:10,663 - ERROR - שגיאה בעיבוד דוגמאות/שרון- רשימת משתתפים הכנה לבחינה 1-13 copy.pdf: 'ContactExtractor' object has no attribute 'extract_from_pdf'
+2025-03-02 02:40:10,739 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:11,111 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:11,963 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:11,963 - ERROR - שגיאה בעיבוד דוגמאות/מתעניינים בקורס נדל copy.doc: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:12,109 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:13,226 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:14,445 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:15,718 - ERROR - שגיאה בעיבוד דוגמאות/רשימה_20כפר_20יונה[1] copy.pdf: 'ContactExtractor' object has no attribute 'extract_from_pdf'
+2025-03-02 02:40:15,740 - ERROR - שגיאה בעיבוד דוגמאות/-תחרות -מבחן תיווך אפריל 2011 copy.pdf: 'ContactExtractor' object has no attribute 'extract_from_pdf'
+2025-03-02 02:40:16,145 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:18,232 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:20,727 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:22,115 - ERROR - שגיאה בעיבוד דוגמאות/פנקס פליירים copy.pdf: 'ContactExtractor' object has no attribute 'extract_from_pdf'
+2025-03-02 02:40:22,133 - ERROR - שגיאה בעיבוד דוגמאות/תחרות מבחן תיווך- יולי 2011 copy.pdf: 'ContactExtractor' object has no attribute 'extract_from_pdf'
+2025-03-02 02:40:22,507 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:24,891 - ERROR - שגיאה בעיבוד דוגמאות/מתעניינים בקורס נדל copy.pdf: 'ContactExtractor' object has no attribute 'extract_from_pdf'
+2025-03-02 02:40:24,891 - ERROR - שגיאה בעיבוד דוגמאות/מתעניינים בקורס מחזור 2 copy.pdf: 'ContactExtractor' object has no attribute 'extract_from_pdf'
+2025-03-02 02:40:25,951 - INFO - Retrieving http://search.maven.org/remotecontent?filepath=org/apache/tika/tika-server-standard/2.6.0/tika-server-standard-2.6.0.jar to /var/folders/cc/rszd7xg94hx2mjl862h803hh0000gn/T/tika-server.jar.
+2025-03-02 02:40:48,436 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:48,436 - ERROR - שגיאה בעיבוד דוגמאות/מעקב פרסום אוגוסט ספטמבר copy.docx: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:48,436 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:48,436 - ERROR - שגיאה בעיבוד דוגמאות/רשימת תלמידים חדרה copy.xlsx: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:48,437 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:48,437 - ERROR - שגיאה בעיבוד דוגמאות/רשימה_20כפר_20יונה[1] copy.docx: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:48,437 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:48,437 - ERROR - שגיאה בעיבוד דוגמאות/רשימה_20כפר_20יונה[1] copy.pdf: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:48,437 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:48,437 - ERROR - שגיאה בעיבוד דוגמאות/-תחרות -מבחן תיווך אפריל 2011 copy.pdf: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:48,438 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:48,438 - ERROR - שגיאה בעיבוד דוגמאות/פוטנציאליים מחזור נובמבר copy.docx: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:55,282 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:55,282 - ERROR - שגיאה בעיבוד דוגמאות/רשימת לקוחות מעוניינן יריד הדירות בחיפה copy.docx: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:55,282 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:55,282 - ERROR - שגיאה בעיבוד דוגמאות/מתעניינים בקורס נדל copy.docx: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:55,283 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:55,283 - ERROR - שגיאה בעיבוד דוגמאות/כנס התחדשות עירונית תמ_א 38 7.11.13  - רשימת לקוחות פוטנצאלים (1) copy.docx: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:55,283 - ERROR - שגיאה בשמירת הקובץ: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:40:55,283 - ERROR - שגיאה כללית: "None of [Index(['name', 'role', 'phone', 'email', 'address', 'additional_phones',\n       'additional_emails', 'additional_addresses', 'additional_roles',\n       'source_file'],\n      dtype='object')] are in the [columns]"
+2025-03-02 02:44:55,669 - INFO - נמצאו 66 קבצים לעיבוד
+2025-03-02 02:44:55,878 - INFO - נשמרה התקדמות אחרי 5 קבצים
+2025-03-02 02:44:55,960 - INFO - נשמרה התקדמות אחרי 10 קבצים
+2025-03-02 02:44:56,017 - INFO - נשמרה התקדמות אחרי 15 קבצים
+2025-03-02 02:44:56,231 - INFO - נשמרה התקדמות אחרי 20 קבצים
+2025-03-02 02:44:57,807 - INFO - נשמרה התקדמות אחרי 25 קבצים
+2025-03-02 02:44:57,963 - INFO - נשמרה התקדמות אחרי 30 קבצים
+2025-03-02 02:44:58,327 - INFO - נשמרה התקדמות אחרי 35 קבצים
+2025-03-02 02:45:06,595 - INFO - נשמרה התקדמות אחרי 40 קבצים
+2025-03-02 02:45:07,915 - INFO - נשמרה התקדמות אחרי 45 קבצים
+2025-03-02 02:45:09,189 - INFO - נשמרה התקדמות אחרי 50 קבצים
+2025-03-02 02:45:10,495 - INFO - נשמרה התקדמות אחרי 55 קבצים
+2025-03-02 02:45:11,876 - INFO - נשמרה התקדמות אחרי 60 קבצים
+2025-03-02 02:45:13,174 - INFO - נשמרה התקדמות אחרי 65 קבצים
+2025-03-02 02:45:14,387 - INFO - הסתיים עיבוד 66 קבצים
+2025-03-02 02:45:14,387 - INFO - נמצאו 17782 אנשי קשר חדשים
+2025-03-02 02:45:14,387 - INFO - סה"כ 17782 אנשי קשר נשמרו בקובץ
+2025-03-02 02:46:48,430 - INFO - נטענו 17782 אנשי קשר קיימים
+2025-03-02 02:46:48,430 - INFO - נמצאו 66 קבצים לעיבוד
+2025-03-02 02:46:48,652 - INFO - נשמרה התקדמות אחרי 5 קבצים
+2025-03-02 02:46:48,716 - INFO - נשמרה התקדמות אחרי 10 קבצים
+2025-03-02 02:46:48,771 - INFO - נשמרה התקדמות אחרי 15 קבצים
+2025-03-02 02:46:49,001 - INFO - נשמרה התקדמות אחרי 20 קבצים
+2025-03-02 02:46:50,527 - INFO - נשמרה התקדמות אחרי 25 קבצים
+2025-03-02 02:46:50,660 - INFO - נשמרה התקדמות אחרי 30 קבצים
+2025-03-02 02:46:50,932 - INFO - נשמרה התקדמות אחרי 35 קבצים
+2025-03-02 02:46:58,298 - INFO - נשמרה התקדמות אחרי 40 קבצים
+2025-03-02 02:46:58,427 - INFO - נשמרה התקדמות אחרי 45 קבצים
+2025-03-02 02:46:58,486 - INFO - נשמרה התקדמות אחרי 50 קבצים
+2025-03-02 02:46:58,634 - INFO - נשמרה התקדמות אחרי 55 קבצים
+2025-03-02 02:46:58,815 - INFO - נשמרה התקדמות אחרי 60 קבצים
+2025-03-02 02:46:58,914 - INFO - נשמרה התקדמות אחרי 65 קבצים
+2025-03-02 02:46:58,947 - INFO - הסתיים עיבוד 66 קבצים
+2025-03-02 02:46:58,948 - INFO - נמצאו 0 אנשי קשר חדשים
+2025-03-02 02:46:58,948 - INFO - סה"כ 17782 אנשי קשר נשמרו בקובץ
