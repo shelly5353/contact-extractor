@@ -10,194 +10,170 @@ class ContactExtractorApp:
         self.root = root
         self.root.title("מחלץ אנשי קשר")
         self.root.geometry("800x600")
+        self.root.configure(bg='#f0f0f0')
         
-        # Configure logging
+        # הגדרת משתנים
+        self.source_folder = tk.StringVar()
+        self.target_file = tk.StringVar()
+        self.output_mode = tk.StringVar(value="new")  # ברירת מחדל: קובץ חדש
+        
+        # הגדרת לוגר
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
         
-        # Set fixed database path
-        self.database_path = '/Users/shellysmac/Documents/Worksking/יעל ישראל/UP/Data_Base.xlsx'
+        # יצירת הממשק
+        self.create_widgets()
         
-        # Create main frame
-        main_frame = ttk.Frame(root, padding="10")
+        # הגדרת הודעות לוג
+        self.log_messages = []
+        
+    def create_widgets(self):
+        # מסגרת ראשית
+        main_frame = ttk.Frame(self.root, padding="10")
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # Source folder selection
-        ttk.Label(main_frame, text="תיקיית מקור:").grid(row=0, column=0, sticky=tk.W, pady=5)
-        self.source_path = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.source_path, width=50).grid(row=0, column=1, sticky=(tk.W, tk.E), pady=5)
-        ttk.Button(main_frame, text="בחר תיקייה", command=self.select_source_folder).grid(row=0, column=2, padx=5, pady=5)
+        # בחירת תיקיית מקור
+        source_frame = ttk.LabelFrame(main_frame, text="תיקיית מקור", padding="5")
+        source_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
         
-        # Process button
-        ttk.Button(main_frame, text="התחל עיבוד", command=self.process_files).grid(row=1, column=0, columnspan=3, pady=20)
+        ttk.Label(source_frame, text="תיקייה:").grid(row=0, column=0, sticky=tk.W)
+        ttk.Entry(source_frame, textvariable=self.source_folder, width=50).grid(row=0, column=1, padx=5)
+        ttk.Button(source_frame, text="בחר תיקייה", command=self.select_source_folder).grid(row=0, column=2)
         
-        # Progress frame
+        # בחירת קובץ יעד
+        target_frame = ttk.LabelFrame(main_frame, text="קובץ יעד", padding="5")
+        target_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+        
+        ttk.Label(target_frame, text="קובץ:").grid(row=0, column=0, sticky=tk.W)
+        ttk.Entry(target_frame, textvariable=self.target_file, width=50).grid(row=0, column=1, padx=5)
+        ttk.Button(target_frame, text="בחר קובץ", command=self.select_target_file).grid(row=0, column=2)
+        
+        # בחירת מצב פלט
+        output_frame = ttk.LabelFrame(main_frame, text="מצב פלט", padding="5")
+        output_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+        
+        ttk.Radiobutton(output_frame, text="יצור קובץ חדש", variable=self.output_mode, value="new").grid(row=0, column=0, sticky=tk.W)
+        ttk.Radiobutton(output_frame, text="עדכון קובץ קיים", variable=self.output_mode, value="update").grid(row=0, column=1, sticky=tk.W)
+        
+        # מסגרת התקדמות
         progress_frame = ttk.LabelFrame(main_frame, text="התקדמות", padding="5")
-        progress_frame.grid(row=2, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
+        progress_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
         
-        # Progress bar
         self.progress_var = tk.DoubleVar()
         self.progress_bar = ttk.Progressbar(progress_frame, variable=self.progress_var, maximum=100)
-        self.progress_bar.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=5)
+        self.progress_bar.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E))
         
-        # Status label
-        self.status_var = tk.StringVar(value="מוכן")
-        ttk.Label(progress_frame, textvariable=self.status_var).grid(row=1, column=0, sticky=tk.W, pady=5)
+        self.status_label = ttk.Label(progress_frame, text="")
+        self.status_label.grid(row=1, column=0, columnspan=2, sticky=tk.W)
         
-        # Log frame
-        log_frame = ttk.LabelFrame(main_frame, text="לוג", padding="5")
-        log_frame.grid(row=3, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+        # מסגרת לוג
+        log_frame = ttk.LabelFrame(main_frame, text="לוג פעילות", padding="5")
+        log_frame.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
         
-        # Log text
         self.log_text = tk.Text(log_frame, height=15, width=80)
         self.log_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # Scrollbar for log
         scrollbar = ttk.Scrollbar(log_frame, orient=tk.VERTICAL, command=self.log_text.yview)
         scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
-        self.log_text['yscrollcommand'] = scrollbar.set
+        self.log_text.configure(yscrollcommand=scrollbar.set)
         
-        # Configure grid weights
+        # כפתור התחלה
+        ttk.Button(main_frame, text="התחל עיבוד", command=self.process_files).grid(row=5, column=0, columnspan=2, pady=10)
+        
+        # הגדרת הרחבה של החלון
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
         main_frame.columnconfigure(1, weight=1)
-        main_frame.rowconfigure(3, weight=1)
-        log_frame.columnconfigure(0, weight=1)
-        log_frame.rowconfigure(0, weight=1)
-
+        main_frame.rowconfigure(4, weight=1)
+        
     def select_source_folder(self):
         folder = filedialog.askdirectory()
         if folder:
-            self.source_path.set(folder)
-            self.log(f"נבחרה תיקיית מקור: {folder}")
-
-    def log(self, message):
+            self.source_folder.set(folder)
+            self.log_message(f"נבחרה תיקיית מקור: {folder}")
+            
+    def select_target_file(self):
+        file = filedialog.asksaveasfilename(
+            defaultextension=".xlsx",
+            filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
+            initialfile="אנשי_קשר.xlsx"
+        )
+        if file:
+            self.target_file.set(file)
+            self.log_message(f"נבחר קובץ יעד: {file}")
+            
+    def log_message(self, message):
+        self.log_messages.append(message)
         self.log_text.insert(tk.END, message + "\n")
         self.log_text.see(tk.END)
         self.root.update()
-
+        
     def process_files(self):
-        source_folder = self.source_path.get()
+        source_folder = self.source_folder.get()
+        target_file = self.target_file.get()
         
-        if not source_folder:
-            messagebox.showerror("שגיאה", "נא לבחור תיקיית מקור")
+        if not source_folder or not target_file:
+            messagebox.showerror("שגיאה", "נא לבחור תיקיית מקור וקובץ יעד")
             return
-        
+            
         try:
-            self.status_var.set("מעבד קבצים...")
+            # איפוס סרגל ההתקדמות
             self.progress_var.set(0)
+            self.status_label.config(text="מתחיל בעיבוד...")
             self.root.update()
             
-            # Initialize contact extractor
+            # יצירת מחלץ אנשי קשר
             extractor = ContactExtractor()
-            all_contacts = {}
             
-            # Load existing contacts from database if it exists
-            if os.path.exists(self.database_path):
-                try:
-                    df = pd.read_excel(self.database_path)
-                    for _, row in df.iterrows():
-                        contact = Contact(
-                            name=row['שם'],
-                            phone=row['טלפון'].split('; ')[0] if pd.notna(row['טלפון']) else None,
-                            email=row['אימייל'].split('; ')[0] if pd.notna(row['אימייל']) else None,
-                            address=row['כתובת'].split('; ')[0] if pd.notna(row['כתובת']) else None,
-                            source_file=row['קובץ מקור'] if pd.notna(row['קובץ מקור']) else None
-                        )
-                        if pd.notna(row['טלפון']):
-                            contact.phones.update(row['טלפון'].split('; '))
-                        if pd.notna(row['אימייל']):
-                            contact.emails.update(row['אימייל'].split('; '))
-                        if pd.notna(row['כתובת']):
-                            contact.addresses.update(row['כתובת'].split('; '))
-                        
-                        # Create unique key
-                        name_key = contact.name.lower().strip()
-                        phone_key = list(contact.phones)[0] if contact.phones else ""
-                        email_key = list(contact.emails)[0] if contact.emails else ""
-                        key = f"{name_key}_{phone_key}_{email_key}"
-                        all_contacts[key] = contact
-                    
-                    self.log(f"נטענו {len(all_contacts)} אנשי קשר מהקובץ הקיים")
-                except Exception as e:
-                    self.log(f"שגיאה בטעינת הקובץ הקיים: {str(e)}")
-            
-            # Get list of files
-            files = []
-            for root, _, filenames in os.walk(source_folder):
-                for filename in filenames:
-                    if filename.lower().endswith(('.xlsx', '.xls', '.doc', '.docx')):
-                        files.append(os.path.join(root, filename))
-            
+            # חילוץ אנשי קשר מכל הקבצים
+            contacts = []
+            files = [f for f in os.listdir(source_folder) if f.endswith(('.xlsx', '.xls', '.doc', '.docx'))]
             total_files = len(files)
-            processed_files = 0
-            total_contacts = 0
-            merged_contacts = 0
             
-            # Process each file
-            for file_path in files:
-                self.log(f"מעבד קובץ: {file_path}")
+            for i, file in enumerate(files):
+                file_path = os.path.join(source_folder, file)
+                self.log_message(f"מעבד קובץ: {file}")
                 
                 try:
-                    # Extract contacts based on file type
-                    if file_path.lower().endswith(('.xlsx', '.xls')):
-                        contacts = extractor.extract_from_xlsx(file_path)
-                    elif file_path.lower().endswith(('.doc', '.docx')):
-                        contacts = extractor.extract_from_doc(file_path)
-                    else:
-                        continue
-                    
-                    # Add contacts to dictionary (handling duplicates)
-                    for contact in contacts:
-                        total_contacts += 1
-                        
-                        # Create a unique key based on name and contact details
-                        name_key = contact.name.lower().strip()
-                        phone_key = list(contact.phones)[0] if contact.phones else ""
-                        email_key = list(contact.emails)[0] if contact.emails else ""
-                        
-                        # Try different combinations for matching
-                        possible_keys = [
-                            f"{name_key}_{phone_key}",
-                            f"{name_key}_{email_key}",
-                            f"{name_key}_{phone_key}_{email_key}"
-                        ]
-                        
-                        # Check if this contact matches any existing contact
-                        found_match = False
-                        for key in possible_keys:
-                            if key in all_contacts:
-                                all_contacts[key].merge(contact)
-                                merged_contacts += 1
-                                found_match = True
-                                break
-                        
-                        # If no match found, add as new contact
-                        if not found_match:
-                            all_contacts[possible_keys[0]] = contact
-                    
-                    processed_files += 1
-                    progress = (processed_files / total_files) * 100
-                    self.progress_var.set(progress)
-                    self.root.update()
-                    
+                    file_contacts = extractor.extract_contacts(file_path)
+                    contacts.extend(file_contacts)
+                    self.log_message(f"נמצאו {len(file_contacts)} אנשי קשר בקובץ {file}")
                 except Exception as e:
-                    self.log(f"שגיאה בעיבוד הקובץ {file_path}: {str(e)}")
-                    continue
+                    self.log_message(f"שגיאה בעיבוד הקובץ {file}: {str(e)}")
+                
+                # עדכון התקדמות
+                progress = (i + 1) / total_files * 100
+                self.progress_var.set(progress)
+                self.status_label.config(text=f"עובד קובץ {i+1} מתוך {total_files}")
+                self.root.update()
             
-            # Save contacts to Excel
-            if all_contacts:
-                save_contacts_to_excel(all_contacts, self.database_path)
-                self.log(f"נשמרו {len(all_contacts)} אנשי קשר לקובץ {self.database_path}")
-                self.log(f"סה\"כ אנשי קשר שנמצאו: {total_contacts}")
-                self.log(f"כפילויות שמוזגו: {merged_contacts}")
+            if not contacts:
+                messagebox.showwarning("אזהרה", "לא נמצאו אנשי קשר בקבצים")
+                return
+                
+            # שמירת התוצאות
+            if self.output_mode.get() == "new":
+                # יצירת קובץ חדש
+                extractor.save_contacts_to_excel(contacts, target_file)
+                self.log_message(f"נשמרו {len(contacts)} אנשי קשר לקובץ חדש: {target_file}")
             else:
-                self.log("לא נמצאו אנשי קשר")
+                # עדכון קובץ קיים
+                if os.path.exists(target_file):
+                    existing_contacts = extractor.load_contacts_from_excel(target_file)
+                    all_contacts = existing_contacts + contacts
+                    # הסרת כפילויות
+                    unique_contacts = extractor.remove_duplicates(all_contacts)
+                    extractor.save_contacts_to_excel(unique_contacts, target_file)
+                    self.log_message(f"עודכנו {len(unique_contacts)} אנשי קשר בקובץ: {target_file}")
+                else:
+                    messagebox.showerror("שגיאה", "קובץ היעד לא קיים")
+                    return
             
-            self.status_var.set("העיבוד הושלם")
-            messagebox.showinfo("הצלחה", "העיבוד הושלם בהצלחה")
+            self.status_label.config(text="העיבוד הושלם בהצלחה!")
+            messagebox.showinfo("הצלחה", f"נשמרו {len(contacts)} אנשי קשר בהצלחה")
             
         except Exception as e:
-            self.log(f"שגיאה: {str(e)}")
-            self.status_var.set("שגיאה")
+            self.log_message(f"שגיאה: {str(e)}")
             messagebox.showerror("שגיאה", f"אירעה שגיאה: {str(e)}")
 
 def main():

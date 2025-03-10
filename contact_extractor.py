@@ -571,6 +571,69 @@ class ContactExtractor:
         
         return contacts
 
+    def load_contacts_from_excel(self, file_path):
+        """טוען אנשי קשר מקובץ Excel קיים"""
+        try:
+            df = pd.read_excel(file_path)
+            contacts = []
+            
+            for _, row in df.iterrows():
+                contact = Contact(
+                    name=row['שם'],
+                    phone=row['טלפון'].split('; ')[0] if pd.notna(row['טלפון']) else None,
+                    email=row['אימייל'].split('; ')[0] if pd.notna(row['אימייל']) else None,
+                    address=row['כתובת'].split('; ')[0] if pd.notna(row['כתובת']) else None
+                )
+                
+                if pd.notna(row['טלפון']):
+                    contact.phones.update(row['טלפון'].split('; '))
+                if pd.notna(row['אימייל']):
+                    contact.emails.update(row['אימייל'].split('; '))
+                if pd.notna(row['כתובת']):
+                    contact.addresses.update(row['כתובת'].split('; '))
+                
+                contacts.append(contact)
+            
+            self.logger.info(f"נטענו {len(contacts)} אנשי קשר מהקובץ {file_path}")
+            return contacts
+            
+        except Exception as e:
+            self.logger.error(f"שגיאה בטעינת אנשי קשר מהקובץ {file_path}: {str(e)}")
+            return []
+            
+    def remove_duplicates(self, contacts):
+        """מסיר כפילויות מרשימת אנשי קשר"""
+        unique_contacts = {}
+        
+        for contact in contacts:
+            # יצירת מפתח ייחודי
+            name_key = contact.name.lower().strip()
+            phone_key = list(contact.phones)[0] if contact.phones else ""
+            email_key = list(contact.emails)[0] if contact.emails else ""
+            key = f"{name_key}_{phone_key}_{email_key}"
+            
+            if key in unique_contacts:
+                # מיזוג אנשי קשר זהים
+                unique_contacts[key].merge(contact)
+            else:
+                unique_contacts[key] = contact
+        
+        return list(unique_contacts.values())
+        
+    def extract_contacts(self, file_path):
+        """חולץ אנשי קשר מכל סוגי הקבצים הנתמכים"""
+        try:
+            if file_path.lower().endswith(('.xlsx', '.xls')):
+                return self.extract_from_xlsx(file_path)
+            elif file_path.lower().endswith(('.doc', '.docx')):
+                return self.extract_from_doc(file_path)
+            else:
+                self.logger.warning(f"סוג קובץ לא נתמך: {file_path}")
+                return []
+        except Exception as e:
+            self.logger.error(f"שגיאה בחילוץ אנשי קשר מהקובץ {file_path}: {str(e)}")
+            return []
+
 def save_contacts_to_excel(contacts: Dict[str, Contact], output_path: str) -> None:
     """Save contacts to Excel file."""
     try:
